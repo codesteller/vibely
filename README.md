@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-	<img src="assets/vibely-logo.png" alt="Vibely Logo" width="180"/>
+	<img src="./assets/vibely_logo.png" alt="Vibely Logo" width="720"/>
 </p>
 
 # Vibely
@@ -24,12 +24,12 @@
 	<a href="https://github.com/codesteller/vibely/graphs/contributors">
 		<img src="https://img.shields.io/github/contributors/codesteller/vibely" alt="Contributors"/>
 	</a>
-	<a href="https://github.com/codesteller/vibely/stargazers">
+	<!-- <a href="https://github.com/codesteller/vibely/stargazers">
 		<img src="https://img.shields.io/github/stars/codesteller/vibely?style=social" alt="Stars"/>
 	</a>
 	<a href="https://github.com/codesteller/vibely/network/members">
 		<img src="https://img.shields.io/github/forks/codesteller/vibely?style=social" alt="Forks"/>
-	</a>
+	</a> -->
 	<a href="https://github.com/codesteller/vibely/commits/master">
 		<img src="https://img.shields.io/github/last-commit/codesteller/vibely" alt="Last Commit"/>
 	</a>
@@ -56,6 +56,22 @@ Vibely is an open-source, enterprise-grade, all-in-one collaboration platform th
 	 cd vibely
 	 ```
 2. **See the [docs](docs/) folder for setup and contribution guides.**
+
+3. **Start all services with Docker Compose:**
+	```sh
+	cd docker
+	docker compose up --build
+	```
+	This will start the backend, MongoDB, PostgreSQL, and Redis containers. You can access the backend API at http://localhost:3000 after the containers are running.
+
+4. **Test your environment setup:**
+    Open a new terminal and run:
+    ```sh
+    cd backend
+    npm install # if not already done
+    npm test
+    ```
+    This will run basic tests to check if MongoDB, PostgreSQL, and Redis are accessible from the backend container. All tests should pass if your environment is set up correctly.
 
 ## Contributing
 We welcome contributions! Please see [docs/contribution.md](docs/contribution.md) for guidelines.
