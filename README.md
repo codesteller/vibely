@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-	<img src="./assets/vibely_logo.png" alt="Vibely Logo" width="480"/>
+	<img src="./assets/vibely_logo.png" alt="Vibely Logo" width="720"/>
 </p>
 
 # Vibely
