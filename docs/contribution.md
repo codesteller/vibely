@@ -16,7 +16,7 @@ Thank you for your interest in contributing to Vibely! Vibely is an open-source,
 ---
 
 ## Code of Conduct
-By participating in this project, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md). Please treat everyone with respect and help us maintain a welcoming community.
+By participating in this project, you agree to abide by our [Code of Conduct](code_of_conduct.md). Please treat everyone with respect and help us maintain a welcoming community.
 
 ## How to Contribute
 - **Bug Reports:** Use [GitHub Issues](../../issues) to report bugs. Please include steps to reproduce, expected behavior, and screenshots/logs if possible.
