@@ -57,6 +57,22 @@ Vibely is an open-source, enterprise-grade, all-in-one collaboration platform th
 	 ```
 2. **See the [docs](docs/) folder for setup and contribution guides.**
 
+3. **Start all services with Docker Compose:**
+	```sh
+	cd docker
+	docker compose up --build
+	```
+	This will start the backend, MongoDB, PostgreSQL, and Redis containers. You can access the backend API at http://localhost:3000 after the containers are running.
+
+4. **Test your environment setup:**
+    Open a new terminal and run:
+    ```sh
+    cd backend
+    npm install # if not already done
+    npm test
+    ```
+    This will run basic tests to check if MongoDB, PostgreSQL, and Redis are accessible from the backend container. All tests should pass if your environment is set up correctly.
+
 ## Contributing
 We welcome contributions! Please see [docs/contribution.md](docs/contribution.md) for guidelines.
 
