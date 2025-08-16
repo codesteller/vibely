@@ -103,8 +103,9 @@ Vibely is a comprehensive, open-source, self-hosted collaboration platform that 
 - **Real-time:** Socket.IO server with Redis adapter for clustering
 - **Queue System:** Bull Queue with Redis for background job processing
 
-### 4.3 Data & Storage
-- **Primary Database:** PostgreSQL 15+ with TypeORM and connection pooling
+### 4.3 Data & Storage (MERN + PostgreSQL Hybrid)
+- **Primary Database:** MongoDB 6+ for document storage (users, projects, wiki content)
+- **Relational Database:** PostgreSQL 15+ for complex relationships and hierarchies
 - **Caching:** Redis 7+ with clustering support
 - **Search Engine:** Elasticsearch 8+ with Apache Lucene fallback
 - **File Storage:** MinIO (S3-compatible) with distributed mode support
@@ -117,7 +118,11 @@ Vibely is a comprehensive, open-source, self-hosted collaboration platform that 
 - **Vector Database:** Pinecone or Weaviate for embedding storage
 
 ### 4.5 Mobile Applications
-- **Framework:** Flutter 3+ with Dart for iOS and Android
+- **Framework:** React Native with TypeScript for maximum code reuse
+- **State Management:** Redux Toolkit (shared with web application)
+- **Navigation:** React Navigation 6+ with native performance
+- **Local Storage:** SQLite with Redux Persist for offline capabilities
+- **Push Notifications:** Firebase Cloud Messaging integration
 - **State Management:** Bloc pattern with flutter_bloc
 - **Local Storage:** SQLite with sqflite and drift for offline capabilities
 - **Push Notifications:** Firebase Cloud Messaging
