@@ -12,7 +12,7 @@ Vibely is a comprehensive, self-hosted collaboration platform that combines agil
 - **Open Source First**: Built with open-source technologies, avoiding vendor lock-in
 - **Developer-Centric**: Deep Git integration and development workflow automation
 - **Real-Time Collaboration**: WebSocket-based live updates and notifications
-- **Multi-Platform**: Web (React) and mobile (Flutter) applications with consistent experience
+- **Multi-Platform**: Web (React) and mobile (React Native) applications with maximum code reuse
 - **Performance-First**: Sub-second response times with optimized caching and database design
 - **Enterprise SSO**: Keycloak-based SSO with Google, Microsoft, and Zoho integration
 
@@ -24,7 +24,7 @@ Vibely is a comprehensive, self-hosted collaboration platform that combines agil
 graph TB
     subgraph "Client Layer"
         WEB[Web Application<br/>React/TypeScript]
-        MOBILE[Mobile Apps<br/>Flutter]
+        MOBILE[Mobile Apps<br/>React Native]
         API_CLIENT[API Clients<br/>Third-party]
     end
     
@@ -50,7 +50,8 @@ graph TB
     end
     
     subgraph "Data Layer"
-        POSTGRES[(PostgreSQL<br/>Primary Data)]
+        MONGODB[(MongoDB<br/>Document Storage)]
+        POSTGRES[(PostgreSQL<br/>Relational Data)]
         REDIS[(Redis<br/>Cache/Sessions)]
         MINIO[(MinIO<br/>File Storage)]
         SEARCH[(Elasticsearch<br/>Search Index)]
@@ -76,18 +77,20 @@ graph TB
     GATEWAY --> INTEGRATION
     GATEWAY --> ADMIN
     
-    USER --> POSTGRES
-    PROJECT --> POSTGRES
-    WIKI --> POSTGRES
+    USER --> MONGODB
+    PROJECT --> MONGODB
+    WIKI --> MONGODB
     NOTIFICATION --> REDIS
     FILE --> MINIO
     
     USER --> REDIS
     PROJECT --> REDIS
     PROJECT --> AI
+    PROJECT --> POSTGRES
     WIKI --> SEARCH
     PROJECT --> SEARCH
     AI --> POSTGRES
+    ADMIN --> MONGODB
     ADMIN --> POSTGRES
     
     AUTH --> KEYCLOAK
@@ -112,7 +115,7 @@ graph TB
 
 **Responsibilities:**
 - User authentication and authorization
-- Role hierarchy management (Project Manager → Technical Lead → Developer → Tester/Reviewer)
+- Role hierarchy management (Admin → Project Manager → Technical Lead → Developer → Tester/Reviewer → Guest)
 - Workspace access control
 - CSV bulk import functionality
 
@@ -145,9 +148,9 @@ interface User {
 }
 
 interface Role {
-  type: 'PROJECT_MANAGER' | 'TECHNICAL_LEAD' | 'DEVELOPER' | 'TESTER_REVIEWER' | 'GUEST'
+  type: 'ADMIN' | 'PROJECT_MANAGER' | 'TECHNICAL_LEAD' | 'DEVELOPER' | 'TESTER_REVIEWER' | 'GUEST'
   permissions: Permission[]
-  hierarchy: number // 1=highest, 5=lowest (Guest)
+  hierarchy: number // 1=highest (Admin), 6=lowest (Guest)
 }
 ```
 
@@ -475,35 +478,46 @@ interface FileAttachment {
 }
 ```
 
-### 8. Admin Service
+### 8. Admin Service (IT Operations Panel)
 
 **Responsibilities:**
-- System monitoring and health checks
-- User and workspace management
-- Backup and restore operations
-- Performance analytics and reporting
-- System configuration management
+- System operations and infrastructure management
+- Technical configuration and settings management
+- System monitoring, alerting, and diagnostics
+- Backup/restore and disaster recovery operations
+- User/workspace management for IT operations
+- Integration configuration and maintenance
 
 **Key Components:**
 ```typescript
 interface AdminService {
-  // System Monitoring
+  // System Operations
   getSystemHealth(): Promise<SystemHealth>
   getPerformanceMetrics(): Promise<PerformanceMetrics>
-  getUserActivityReport(dateRange: DateRange): Promise<ActivityReport>
+  restartService(serviceName: string): Promise<ServiceRestartResult>
+  updateSystemConfiguration(config: SystemConfig): Promise<void>
   
-  // Backup and Restore
+  // IT User Management
+  bulkUserOperations(operations: BulkUserOperation[]): Promise<BulkOperationResult>
+  resetUserPassword(userId: string): Promise<PasswordResetResult>
+  deactivateUser(userId: string, reason: string): Promise<void>
+  assignUserRoles(userId: string, roles: RoleAssignment[]): Promise<void>
+  
+  // Infrastructure Management
   createSystemBackup(): Promise<BackupResult>
   restoreFromBackup(backupId: string): Promise<RestoreResult>
-  scheduleBackup(schedule: BackupSchedule): Promise<void>
+  scheduleMaintenanceWindow(window: MaintenanceWindow): Promise<void>
   
-  // User Management
-  bulkUserOperations(operations: BulkUserOperation[]): Promise<BulkOperationResult>
-  getSystemUsageStats(): Promise<UsageStats>
+  // Integration Configuration
+  configureSSO(ssoConfig: SSOConfiguration): Promise<void>
+  setupGitIntegration(gitConfig: GitIntegrationConfig): Promise<void>
+  configureEmailServer(emailConfig: EmailServerConfig): Promise<void>
   
-  // Configuration
-  updateSystemSettings(settings: SystemSettings): Promise<void>
+  // Monitoring and Diagnostics
   getAuditLogs(filters: AuditLogFilters): Promise<AuditLog[]>
+  getDatabaseMetrics(): Promise<DatabaseMetrics>
+  getSystemLogs(filters: LogFilters): Promise<SystemLog[]>
+  runSystemDiagnostics(): Promise<DiagnosticReport>
 }
 
 interface SystemHealth {
@@ -530,6 +544,35 @@ interface BackupResult {
   status: 'SUCCESS' | 'FAILED' | 'PARTIAL'
   includedServices: string[]
   errors?: string[]
+}
+
+interface SystemConfig {
+  emailServer: EmailServerConfig
+  ssoProviders: SSOConfiguration[]
+  backupSchedule: BackupSchedule
+  performanceThresholds: PerformanceThresholds
+  securitySettings: SecuritySettings
+  maintenanceWindows: MaintenanceWindow[]
+}
+
+interface DiagnosticReport {
+  timestamp: Date
+  systemHealth: 'HEALTHY' | 'WARNING' | 'CRITICAL'
+  services: ServiceDiagnostic[]
+  database: DatabaseDiagnostic
+  storage: StorageDiagnostic
+  network: NetworkDiagnostic
+  recommendations: string[]
+}
+
+interface ServiceDiagnostic {
+  name: string
+  status: 'RUNNING' | 'STOPPED' | 'ERROR'
+  uptime: number
+  memoryUsage: number
+  cpuUsage: number
+  responseTime: number
+  errorRate: number
 }
 ```
 
@@ -622,20 +665,83 @@ erDiagram
 
 ### Database Schema Design
 
-**PostgreSQL Tables:**
+**MongoDB Collections (Document Storage):**
+
+```javascript
+// Users Collection
+{
+  _id: ObjectId,
+  email: "user@example.com",
+  name: "John Doe",
+  passwordHash: "hashed_password",
+  primaryRole: "PROJECT_MANAGER",
+  secondaryRoles: ["DEVELOPER"],
+  isActive: true,
+  preferences: {
+    theme: "dark",
+    notifications: { email: true, push: false },
+    language: "en"
+  },
+  workspaces: [ObjectId("workspace1"), ObjectId("workspace2")],
+  createdAt: ISODate(),
+  updatedAt: ISODate(),
+  lastLogin: ISODate()
+}
+
+// Projects Collection
+{
+  _id: ObjectId,
+  name: "Vibely Development",
+  key: "VIB",
+  description: "Main development project",
+  workspaceId: ObjectId,
+  projectManagerId: ObjectId,
+  settings: {
+    timeTracking: true,
+    customFields: [
+      { name: "Priority", type: "dropdown", options: ["High", "Medium", "Low"] }
+    ]
+  },
+  createdAt: ISODate(),
+  updatedAt: ISODate()
+}
+
+// Wiki Pages Collection
+{
+  _id: ObjectId,
+  title: "API Documentation",
+  content: "Rich text content...",
+  workspaceId: ObjectId,
+  parentId: ObjectId, // for hierarchy
+  authorId: ObjectId,
+  lastModifiedBy: ObjectId,
+  version: 3,
+  tags: ["api", "documentation"],
+  attachments: [ObjectId],
+  createdAt: ISODate(),
+  updatedAt: ISODate()
+}
+```
+
+**PostgreSQL Tables (Relational Data):**
 
 ```sql
--- Users and Authentication
-CREATE TABLE users (
+-- Backlog Items Hierarchy (Complex relationships)
+CREATE TABLE backlog_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    email VARCHAR(255) UNIQUE NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    primary_role user_role NOT NULL,
-    is_active BOOLEAN DEFAULT true,
+    project_id UUID NOT NULL, -- References MongoDB project
+    parent_id UUID REFERENCES backlog_items(id),
+    type item_type NOT NULL,
+    title VARCHAR(500) NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'TODO',
+    priority priority_level NOT NULL DEFAULT 'MEDIUM',
+    story_points INTEGER,
+    assignee_id UUID, -- References MongoDB user
+    reporter_id UUID NOT NULL, -- References MongoDB user
+    start_date DATE,
+    due_date DATE,
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    last_login TIMESTAMP
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE user_roles (
@@ -994,27 +1100,39 @@ interface DatabaseOptimization {
 
 ### Mobile Application Architecture
 
-**Flutter Mobile Apps:**
-- Shared codebase for iOS and Android
-- Offline-first architecture with sync capabilities
+**React Native Mobile Apps:**
+- Shared codebase for iOS and Android with 70-80% code reuse from web
+- Shared Redux store and business logic with web application
+- Offline-first architecture with Redux Persist and SQLite
 - Push notifications via Firebase Cloud Messaging
 - Biometric authentication support
 - Responsive design adapting to tablet/phone form factors
 
 **Mobile-Specific Features:**
-```dart
-// Mobile API Endpoints
-class MobileAPI {
+```typescript
+// Shared API Client (used by both web and mobile)
+class APIClient {
   // Optimized data transfer
-  Future<MobileProjectSummary> getProjectSummary(String projectId);
-  Future<List<MobileBacklogItem>> getMyItems(int limit, int offset);
+  async getProjectSummary(projectId: string): Promise<MobileProjectSummary> {
+    return this.get(`/projects/${projectId}/summary`);
+  }
   
-  // Offline support
-  Future<void> syncOfflineChanges();
-  Future<bool> isOnline();
+  async getMyItems(limit: number, offset: number): Promise<BacklogItem[]> {
+    return this.get(`/items/my?limit=${limit}&offset=${offset}`);
+  }
   
-  // Push notifications
-  Future<void> registerForNotifications(String deviceToken);
+  // Offline support (shared logic)
+  async syncOfflineChanges(): Promise<void> {
+    const offlineActions = await this.getOfflineActions();
+    return this.batchSync(offlineActions);
+  }
+}
+
+// React Native specific features
+class MobileNotifications {
+  async registerForNotifications(deviceToken: string): Promise<void> {
+    return messaging().subscribeToTopic('user-notifications');
+  }
 }
 ```
 

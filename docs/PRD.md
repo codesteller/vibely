@@ -4,7 +4,7 @@
 **Product Name:** Vibely  
 **Version:** 2.0 (Updated with AI-Powered Features)  
 **Description:**  
-Vibely is a comprehensive, open-source, self-hosted collaboration platform that combines advanced project management (JIRA-like) and knowledge management (Confluence-like) capabilities with AI-powered intelligent assistance. It provides flexible workspace management, real-time collaboration, complete agile project lifecycle support, and enterprise-grade scalability while maintaining open standards for SSO and containerized deployment.
+Vibely is a comprehensive, open-source, self-hosted collaboration platform that combines advanced project management (JIRA-like) and knowledge management (Confluence-like) capabilities with AI-powered intelligent assistance. It provides flexible workspace management, real-time collaboration, complete agile project lifecycle support, and enterprise-grade scalability while maintaining open standards for SSO and containerized deployment. Vibely aims to enhance team productivity and streamline workflows through intelligent automation and seamless integration. It allows teams to break down bigger epics and initiatives using AI into manageable tasks and stories, facilitating better planning and execution with proper naming conventions, clear descriptions and acceptance criteria.
 
 **Goals:**  
 - Enable teams and organizations to manage complete agile project lifecycles and documentation in one unified, intelligent platform
@@ -78,7 +78,7 @@ Vibely is a comprehensive, open-source, self-hosted collaboration platform that 
 
 | Role | Hierarchy Level | Primary Responsibilities | Key Capabilities | Secondary Role Constraints |
 |------|----------------|-------------------------|------------------|---------------------------|
-| **Admin** | 1 (Highest) | System administration, user management, configuration | Full system access, CSV uploads, system monitoring, backup management | Can have any secondary roles |
+| **Admin** | 1 (Highest) | IT/System administration, infrastructure management, technical operations | System configuration, user/workspace management, monitoring, backup/restore, security settings, integration setup | Can have any secondary roles for testing |
 | **Project Manager** | 2 | Project oversight, sprint planning, team management, stakeholder communication | Create/modify all ticket types, manage sprints, access all metrics, assign work | Can have Tech Lead, Developer, Tester roles |
 | **Technical Lead** | 3 | Technical architecture, code review oversight, technical mentoring | Approve technical designs, create Features/Stories/Tasks, review code quality | Can have Developer, Tester roles |
 | **Developer** | 4 | Code development, implementation, unit testing, peer reviews | Create/modify Tasks/SubTasks, update development status, perform code reviews | Can have Tester role only |
@@ -103,8 +103,9 @@ Vibely is a comprehensive, open-source, self-hosted collaboration platform that 
 - **Real-time:** Socket.IO server with Redis adapter for clustering
 - **Queue System:** Bull Queue with Redis for background job processing
 
-### 4.3 Data & Storage
-- **Primary Database:** PostgreSQL 15+ with TypeORM and connection pooling
+### 4.3 Data & Storage (MERN + PostgreSQL Hybrid)
+- **Primary Database:** MongoDB 6+ for document storage (users, projects, wiki content)
+- **Relational Database:** PostgreSQL 15+ for complex relationships and hierarchies
 - **Caching:** Redis 7+ with clustering support
 - **Search Engine:** Elasticsearch 8+ with Apache Lucene fallback
 - **File Storage:** MinIO (S3-compatible) with distributed mode support
@@ -117,10 +118,13 @@ Vibely is a comprehensive, open-source, self-hosted collaboration platform that 
 - **Vector Database:** Pinecone or Weaviate for embedding storage
 
 ### 4.5 Mobile Applications
-- **Framework:** Flutter 3+ with Dart for iOS and Android
-- **State Management:** Bloc pattern with flutter_bloc
-- **Local Storage:** SQLite with sqflite and drift for offline capabilities
-- **Push Notifications:** Firebase Cloud Messaging
+- **Framework:** React Native with TypeScript for maximum code reuse
+- **State Management:** Redux Toolkit (shared with web application)
+- **Navigation:** React Navigation 6+ with native performance
+- **Local Storage:** SQLite with Redux Persist for offline capabilities
+- **Push Notifications:** Firebase Cloud Messaging integration
+- **HTTP Client:** Axios (shared with web application)
+- **Biometric Auth:** react-native-biometrics for secure authentication
 
 ### 4.6 Infrastructure & DevOps
 - **Containerization:** Docker and Docker Compose for development
