@@ -24,12 +24,12 @@
 	<a href="https://github.com/codesteller/vibely/graphs/contributors">
 		<img src="https://img.shields.io/github/contributors/codesteller/vibely" alt="Contributors"/>
 	</a>
-	<a href="https://github.com/codesteller/vibely/stargazers">
+	<!-- <a href="https://github.com/codesteller/vibely/stargazers">
 		<img src="https://img.shields.io/github/stars/codesteller/vibely?style=social" alt="Stars"/>
 	</a>
 	<a href="https://github.com/codesteller/vibely/network/members">
 		<img src="https://img.shields.io/github/forks/codesteller/vibely?style=social" alt="Forks"/>
-	</a>
+	</a> -->
 	<a href="https://github.com/codesteller/vibely/commits/master">
 		<img src="https://img.shields.io/github/last-commit/codesteller/vibely" alt="Last Commit"/>
 	</a>
