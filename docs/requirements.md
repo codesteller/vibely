@@ -6,27 +6,47 @@ This feature establishes the core Vibely platform that combines project manageme
 
 ### Role Hierarchy and Responsibilities
 
-The system implements a four-tier role hierarchy where users have one primary role and can have multiple secondary roles at the same level or lower:
+The system implements a six-tier role hierarchy where users have one primary role and can have multiple secondary roles at the same level or lower:
 
-**1. Project Manager (Highest Level)**
+**1. Admin (Highest Level - IT/System Administrator)**
+- **Responsibilities**: System operations, infrastructure management, technical configuration, system monitoring, backup/restore operations, security management
+- **Capabilities**: 
+  - System configuration and settings management
+  - User account creation/deletion and role assignments
+  - Workspace creation and technical configuration
+  - CSV bulk import/export operations
+  - System health monitoring and performance metrics
+  - Backup/restore operations and disaster recovery
+  - Security settings and audit log management
+  - Database maintenance and optimization
+  - Integration configuration (SSO, Git, webhooks)
+  - System updates and maintenance windows
+- **Secondary Roles**: Can have any secondary roles for testing/support purposes
+
+**2. Project Manager (Second Level)**
 - **Responsibilities**: Complete project oversight, sprint planning, team management, backlog prioritization, release planning, stakeholder communication
 - **Capabilities**: Create/modify all ticket types, assign work to team members, manage sprints, access all project metrics and reports
 - **Secondary Roles**: Can also have Technical Lead, Developer, and/or Tester/Reviewer roles
 
-**2. Technical Lead (Second Level)**
+**3. Technical Lead (Third Level)**
 - **Responsibilities**: Technical architecture decisions, code review oversight, technical mentoring, development standards enforcement, technical risk assessment
 - **Capabilities**: Create/modify technical tickets (Features, Stories, Tasks), approve technical designs, assign technical work, review code quality
 - **Secondary Roles**: Can also have Developer and/or Tester/Reviewer roles (but not Project Manager)
 
-**3. Developer (Third Level)**  
+**4. Developer (Fourth Level)**  
 - **Responsibilities**: Code development, technical implementation, unit testing, development task estimation, peer code reviews
 - **Capabilities**: Create/modify development tickets (Tasks, SubTasks), update development status, perform code reviews
 - **Secondary Roles**: Can also have Tester/Reviewer role (but not Project Manager or Technical Lead)
 
-**4. Tester/Reviewer (Lowest Level)**
+**5. Tester/Reviewer (Fifth Level)**
 - **Responsibilities**: Quality assurance, acceptance criteria validation, testing, bug reporting, test case creation
 - **Capabilities**: Create/modify bugs and testing tasks, update testing status, validate acceptance criteria
 - **Secondary Roles**: Cannot have higher-level roles as secondary
+
+**6. Guest (Lowest Level)**
+- **Responsibilities**: Limited access for external stakeholders, view-only access to assigned content
+- **Capabilities**: View-only permissions with admin-defined restrictions, cannot create or modify content
+- **Secondary Roles**: Cannot have any secondary roles
 
 ### System Features
 
@@ -41,7 +61,7 @@ This integrated system enables teams to manage complete agile project lifecycles
 #### Acceptance Criteria
 
 1. WHEN an admin creates a new user account THEN the system SHALL generate a unique user ID, store encrypted credentials, and require assignment of one primary role
-2. WHEN roles are assigned THEN the system SHALL enforce hierarchy: Project Manager (highest), Technical Lead (second), Developer (third), Tester/Reviewer (lowest), where secondary roles must be same level or lower than primary
+2. WHEN roles are assigned THEN the system SHALL enforce hierarchy: Admin (highest), Project Manager (second), Technical Lead (third), Developer (fourth), Tester/Reviewer (fifth), Guest (lowest), where secondary roles must be same level or lower than primary
 3. WHEN a user has multiple roles THEN the system SHALL use the primary role for default permissions and interface, with secondary roles providing additional capabilities
 4. WHEN a user attempts to access resources THEN the system SHALL verify permissions based on their highest applicable role for that specific action
 5. IF role assignments are modified THEN the system SHALL validate hierarchy rules and notify the user of permission changes
@@ -383,6 +403,18 @@ This integrated system enables teams to manage complete agile project lifecycles
 5. IF AI suggestions consistently receive poor feedback THEN the system SHALL adjust confidence thresholds and request more manual input
 
 ### Requirement 30
+
+**User Story:** As an IT administrator, I want a comprehensive admin panel for system management and operations, so that I can maintain the platform without requiring backend code changes.
+
+#### Acceptance Criteria
+
+1. WHEN I access the admin panel THEN the system SHALL provide a dedicated interface for system configuration, user management, and operational tasks
+2. WHEN I manage system settings THEN the system SHALL allow configuration of email servers, SSO providers, backup schedules, and performance thresholds through the UI
+3. WHEN I monitor system health THEN the system SHALL display real-time metrics (CPU, memory, database connections, active users, response times) with alerting capabilities
+4. WHEN I manage users and workspaces THEN the system SHALL provide bulk operations, role assignments, and workspace configuration without requiring database access
+5. IF system issues are detected THEN the system SHALL provide diagnostic tools, log viewers, and maintenance utilities accessible through the admin interface
+
+### Requirement 31
 
 **User Story:** As a security-conscious administrator, I want comprehensive audit logging of user and workspace activities, so that I can monitor system usage and investigate security incidents.
 

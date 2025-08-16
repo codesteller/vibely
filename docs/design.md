@@ -115,7 +115,7 @@ graph TB
 
 **Responsibilities:**
 - User authentication and authorization
-- Role hierarchy management (Project Manager → Technical Lead → Developer → Tester/Reviewer)
+- Role hierarchy management (Admin → Project Manager → Technical Lead → Developer → Tester/Reviewer → Guest)
 - Workspace access control
 - CSV bulk import functionality
 
@@ -148,9 +148,9 @@ interface User {
 }
 
 interface Role {
-  type: 'PROJECT_MANAGER' | 'TECHNICAL_LEAD' | 'DEVELOPER' | 'TESTER_REVIEWER' | 'GUEST'
+  type: 'ADMIN' | 'PROJECT_MANAGER' | 'TECHNICAL_LEAD' | 'DEVELOPER' | 'TESTER_REVIEWER' | 'GUEST'
   permissions: Permission[]
-  hierarchy: number // 1=highest, 5=lowest (Guest)
+  hierarchy: number // 1=highest (Admin), 6=lowest (Guest)
 }
 ```
 
@@ -478,35 +478,46 @@ interface FileAttachment {
 }
 ```
 
-### 8. Admin Service
+### 8. Admin Service (IT Operations Panel)
 
 **Responsibilities:**
-- System monitoring and health checks
-- User and workspace management
-- Backup and restore operations
-- Performance analytics and reporting
-- System configuration management
+- System operations and infrastructure management
+- Technical configuration and settings management
+- System monitoring, alerting, and diagnostics
+- Backup/restore and disaster recovery operations
+- User/workspace management for IT operations
+- Integration configuration and maintenance
 
 **Key Components:**
 ```typescript
 interface AdminService {
-  // System Monitoring
+  // System Operations
   getSystemHealth(): Promise<SystemHealth>
   getPerformanceMetrics(): Promise<PerformanceMetrics>
-  getUserActivityReport(dateRange: DateRange): Promise<ActivityReport>
+  restartService(serviceName: string): Promise<ServiceRestartResult>
+  updateSystemConfiguration(config: SystemConfig): Promise<void>
   
-  // Backup and Restore
+  // IT User Management
+  bulkUserOperations(operations: BulkUserOperation[]): Promise<BulkOperationResult>
+  resetUserPassword(userId: string): Promise<PasswordResetResult>
+  deactivateUser(userId: string, reason: string): Promise<void>
+  assignUserRoles(userId: string, roles: RoleAssignment[]): Promise<void>
+  
+  // Infrastructure Management
   createSystemBackup(): Promise<BackupResult>
   restoreFromBackup(backupId: string): Promise<RestoreResult>
-  scheduleBackup(schedule: BackupSchedule): Promise<void>
+  scheduleMaintenanceWindow(window: MaintenanceWindow): Promise<void>
   
-  // User Management
-  bulkUserOperations(operations: BulkUserOperation[]): Promise<BulkOperationResult>
-  getSystemUsageStats(): Promise<UsageStats>
+  // Integration Configuration
+  configureSSO(ssoConfig: SSOConfiguration): Promise<void>
+  setupGitIntegration(gitConfig: GitIntegrationConfig): Promise<void>
+  configureEmailServer(emailConfig: EmailServerConfig): Promise<void>
   
-  // Configuration
-  updateSystemSettings(settings: SystemSettings): Promise<void>
+  // Monitoring and Diagnostics
   getAuditLogs(filters: AuditLogFilters): Promise<AuditLog[]>
+  getDatabaseMetrics(): Promise<DatabaseMetrics>
+  getSystemLogs(filters: LogFilters): Promise<SystemLog[]>
+  runSystemDiagnostics(): Promise<DiagnosticReport>
 }
 
 interface SystemHealth {
@@ -533,6 +544,35 @@ interface BackupResult {
   status: 'SUCCESS' | 'FAILED' | 'PARTIAL'
   includedServices: string[]
   errors?: string[]
+}
+
+interface SystemConfig {
+  emailServer: EmailServerConfig
+  ssoProviders: SSOConfiguration[]
+  backupSchedule: BackupSchedule
+  performanceThresholds: PerformanceThresholds
+  securitySettings: SecuritySettings
+  maintenanceWindows: MaintenanceWindow[]
+}
+
+interface DiagnosticReport {
+  timestamp: Date
+  systemHealth: 'HEALTHY' | 'WARNING' | 'CRITICAL'
+  services: ServiceDiagnostic[]
+  database: DatabaseDiagnostic
+  storage: StorageDiagnostic
+  network: NetworkDiagnostic
+  recommendations: string[]
+}
+
+interface ServiceDiagnostic {
+  name: string
+  status: 'RUNNING' | 'STOPPED' | 'ERROR'
+  uptime: number
+  memoryUsage: number
+  cpuUsage: number
+  responseTime: number
+  errorRate: number
 }
 ```
 
